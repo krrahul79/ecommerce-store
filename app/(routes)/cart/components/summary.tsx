@@ -14,7 +14,7 @@ const Summary = () => {
   const items = useCart((state) => state.items);
   const deliveryCharge = 5.99;
   const removeAll = useCart((state) => state.removeAll);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (searchParams.get("success")) {

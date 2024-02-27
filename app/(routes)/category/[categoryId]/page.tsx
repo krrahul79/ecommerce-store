@@ -6,9 +6,6 @@ import NoResults from "@/components/ui/no-results";
 import getProducts from "@/actions/get-products";
 import getCategory from "@/actions/get-category";
 
-import Filter from "./components/filter";
-import MobileFilters from "./components/mobile-filters";
-
 export const revalidate = 0;
 
 interface CategoryPageProps {
