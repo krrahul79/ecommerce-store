@@ -44,7 +44,7 @@ const Summary = () => {
   };
 
   const onCheckout = async () => {
-    if (totalMeasure > 0) {
+    if (totalMeasure > 20) {
       setErrorMessage("Sorry, your order exceeds the weight limit.");
       return; // Prevent checkout if weight limit exceeded
     }
