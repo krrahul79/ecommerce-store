@@ -28,11 +28,11 @@ const Summary = () => {
   }, [searchParams, removeAll]);
 
   const totalPrice = items.reduce((total, item) => {
-    return total + Number(item.price);
+    return total + Number(item.cartProduct.newprice) * item.quantity;
   }, 0);
 
   const totalMeasure = items.reduce((total, item) => {
-    return total + Number(item.measure);
+    return total + Number(item.cartProduct.calculatesize) * item.quantity;
   }, 0);
 
   const actaulTotalPrice = () => {
@@ -52,7 +52,7 @@ const Summary = () => {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
       {
-        productIds: items.map((item) => item.id),
+        productIds: items.map((item) => item.cartProduct._id),
         deliveryCharge: deliveryCharge,
       }
     );

@@ -13,7 +13,7 @@ const CategoryCard: React.FC<CategoryCard> = ({ data }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/category/${data?.id}`);
+    router.push(`/category/${data?._id}`);
   };
 
   return (
@@ -21,7 +21,7 @@ const CategoryCard: React.FC<CategoryCard> = ({ data }) => {
       {/* Image & actions */}
       <div className="aspect-square rounded-xl bg-gray-100 relative">
         <Image
-          src={data.imageUrl}
+          src={data.image}
           alt=""
           fill
           className="aspect-square object-cover rounded-md"

@@ -25,6 +25,9 @@ const Navbar = async () => {
           <div className="flex-grow flex justify-center">
             <CategorySwitcher items={categories} />
           </div>
+          <Link href="/categories" className="ml-4">
+            Create Category
+          </Link>
           <NavbarActions />
         </div>
       </Container>

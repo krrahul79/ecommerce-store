@@ -5,17 +5,25 @@ import { X } from "lucide-react";
 import IconButton from "@/components/ui/icon-button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
-import { Product } from "@/types";
+import { Cart, CartProduct, Product } from "@/types";
 
 interface CartItemProps {
-  data: Product;
+  data: Cart;
 }
 
 const CartItem: React.FC<CartItemProps> = ({ data }) => {
   const cart = useCart();
 
   const onRemove = () => {
-    cart.removeItem(data.id);
+    cart.removeItem(data.cartProduct._id);
+  };
+
+  const decreaseQuantity = () => {
+    cart.reduceItem(data.cartProduct._id);
+  };
+
+  const increaseQuantity = () => {
+    cart.increaseItem(data.cartProduct._id);
   };
 
   return (
@@ -23,7 +31,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
       <div className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48">
         <Image
           fill
-          src={data.images[0].url}
+          src={data.cartProduct.images[0]}
           alt=""
           className="object-cover object-center"
         />
@@ -34,11 +42,33 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
         </div>
         <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
           <div className="flex justify-between">
-            <p className=" text-lg font-semibold text-black">{data.name}</p>
+            <p className=" text-lg font-semibold text-black">
+              {data.cartProduct.name}
+            </p>
           </div>
 
           <div className="mt-1 flex text-sm"></div>
-          <Currency value={data.price} />
+          <Currency value={data.cartProduct.newprice} />
+        </div>
+        <div className="flex items-center mt-2">
+          <button
+            onClick={decreaseQuantity}
+            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-l"
+          >
+            -
+          </button>
+          <input
+            type="number"
+            value={data.quantity}
+            readOnly
+            className="px-3 py-1 bg-gray-100 text-gray-900"
+          />
+          <button
+            onClick={increaseQuantity}
+            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-r"
+          >
+            +
+          </button>
         </div>
       </div>
     </li>
