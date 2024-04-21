@@ -4,15 +4,27 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-import Button from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
 import { toast } from "react-hot-toast";
 
-const Summary = () => {
+import getConfig from "@/actions/get-config";
+
+interface SummaryProps {
+  deliveryCharge: number;
+  minAmount: number;
+  maxWeight: number;
+}
+
+const Summary: React.FC<SummaryProps> = ({
+  deliveryCharge,
+  minAmount,
+  maxWeight,
+}) => {
   const searchParams = useSearchParams();
   const items = useCart((state) => state.items);
-  const deliveryCharge = 5.99;
+
   const removeAll = useCart((state) => state.removeAll);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -37,14 +49,14 @@ const Summary = () => {
 
   const actaulTotalPrice = () => {
     var total = totalPrice;
-    if (total < 50) {
+    if (total < minAmount - 0) {
       return deliveryCharge + total;
     }
     return total;
   };
 
   const onCheckout = async () => {
-    if (totalMeasure > 20) {
+    if (totalMeasure > maxWeight) {
       setErrorMessage("Sorry, your order exceeds the weight limit.");
       return; // Prevent checkout if weight limit exceeded
     }
@@ -52,7 +64,10 @@ const Summary = () => {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
       {
-        productIds: items.map((item) => item.cartProduct._id),
+        products: items.map((item) => ({
+          product: item.cartProduct,
+          quantity: item.quantity,
+        })),
         deliveryCharge: deliveryCharge,
       }
     );

@@ -17,27 +17,29 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
-  const { productIds } = await req.json();
+  const { products } = await req.json();
 
-  console.log("productIds", productIds);
+  console.log("products", products);
 
-  if (!productIds || productIds.length === 0) {
+  if (!products || products.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
   }
 
   const client = await clientPromise;
   const db = client.db("Kerafresh");
 
-  const productObjectIds = productIds.map(
-    (productId: string) => new ObjectId(productId)
-  );
-  // Fetch products
-  const products = await db
-    .collection("Products")
-    .find({ _id: { $in: productObjectIds } })
-    .toArray();
+  let deliveryCharge = 5.99;
+  let minAmount = 50.0;
+  const configData = await db.collection("Config").find({}).toArray();
+
+  if (configData && configData.length > 0) {
+    deliveryCharge = parseFloat(String(configData[0].deliveryCharge));
+    minAmount = parseFloat(String(configData[0].minAmount));
+  }
 
   //  console.log("products", products);
+
+  //const orderItems = productsFetched;
 
   // Create order document only after products are fetched
   const collection = await db.collection("Orders");
@@ -52,21 +54,21 @@ export async function POST(req: Request) {
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   var totalAmount = 0;
-  products.forEach((product) => {
+  products.forEach((productItem: any) => {
     line_items.push({
-      quantity: 1,
+      quantity: productItem.quantity,
       price_data: {
         currency: "GBP",
         product_data: {
-          name: product.name,
+          name: productItem.product.name,
         },
-        unit_amount: product.newprice * 100,
+        unit_amount: productItem.product.newprice * 100,
       },
     });
-    totalAmount = totalAmount + product.newprice;
+    totalAmount = totalAmount + productItem.product.newprice;
   });
-  var deliveryCharge = 5.99;
-  if (totalAmount > 50) {
+
+  if (totalAmount > minAmount) {
     deliveryCharge = 0;
   }
 

@@ -3,7 +3,7 @@
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import Currency from "@/components/ui/currency";
-import Button from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import { Product } from "@/types";
 import useCart from "@/hooks/use-cart";
 import { calculatePercentageDifference } from "@/lib/utils";
@@ -13,7 +13,6 @@ interface ChildProductProps {
 }
 
 const Info: React.FC<ChildProductProps> = ({ data }) => {
- 
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
@@ -38,7 +37,6 @@ const Info: React.FC<ChildProductProps> = ({ data }) => {
       </div>
       <div>
         <p className="text-xl mt-5 text-gray-500">{`${data.typeToDisplay}`}</p>
-        
       </div>
       <p className="text-xl mt-5 text-gray-500">Quantity</p>
       <div className="flex items-center mt-2">

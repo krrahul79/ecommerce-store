@@ -7,14 +7,32 @@ import useCart from "@/hooks/use-cart";
 
 import Summary from "./components/summary";
 import CartItem from "./components/cart-item";
+import getConfig from "@/actions/get-config";
 
 export const revalidate = 0;
 
 const CartPage = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const [deliveryCharge, setDeliveryCharge] = useState<number>(5.99);
+  const [minAmount, setMinAmount] = useState<number>(50.0);
+  const [maxWeight, setMaxWeight] = useState<number>(20000);
   const cart = useCart();
 
   useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const configData = await getConfig();
+        if (configData) {
+          setDeliveryCharge(parseFloat(configData.deliveryCharge));
+          setMinAmount(parseFloat(configData.minAmount));
+          setMaxWeight(parseInt(configData.maxWeight));
+        }
+      } catch (error) {
+        console.error("Error fetching config:", error);
+      }
+    };
+
+    fetchConfig();
     setIsMounted(true);
   }, []);
 
@@ -38,7 +56,11 @@ const CartPage = () => {
                 ))}
               </ul>
             </div>
-            <Summary />
+            <Summary
+              deliveryCharge={deliveryCharge}
+              minAmount={minAmount}
+              maxWeight={maxWeight}
+            />
           </div>
         </div>
       </Container>

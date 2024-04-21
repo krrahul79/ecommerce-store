@@ -3,7 +3,7 @@
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import Currency from "@/components/ui/currency";
-import Button from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import { Product, CartProduct } from "@/types";
 import useCart from "@/hooks/use-cart";
 import { calculatePercentageDifference } from "@/lib/utils";
@@ -24,7 +24,7 @@ const Info: React.FC<InfoProps> = ({ data }) => {
       _id: productId,
       name: data.name,
       newprice: newprice || data.newprice,
-      calculatesize: data.calculatesize,
+      calculatesize: data.calculateSize,
       images: data.images,
     };
     cart.addItem({ cartProduct, quantity });

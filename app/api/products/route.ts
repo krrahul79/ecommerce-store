@@ -125,9 +125,8 @@ export async function GET(req: Request) {
     } else {
       products = await db
         .collection("Products")
-        .find({})
-        .sort({ metacritic: -1 })
-        .limit(10)
+        .find({ isChildProduct: false })
+        .sort({ created: 1 })
         .toArray();
     }
 

@@ -1,14 +1,30 @@
+import { ServerMonitoringMode } from "mongodb";
+
 export interface Product {
   _id: string;
   name: string;
   oldprice: string;
   newprice: string;
-  calculatesize: string;
+  calculateSize: string;
   isChildProduct: boolean;
+  categoryId: string;
+  isFeatured: boolean;
+  isArchived: boolean;
+  priority: number;
   images: string[];
   showSize: string;
   typeToDisplay: string;
-  childProducts: Product[];
+  childProducts: ChildProduct[];
+  createdAt: Date;
+}
+
+export interface ChildProduct {
+  _id: string;
+  oldprice: string;
+  newprice: string;
+  showSize: string;
+  calculateSize: string;
+  isChildProduct: boolean;
 }
 
 export interface CartProduct {
@@ -17,6 +33,14 @@ export interface CartProduct {
   newprice: string;
   calculatesize: string;
   images: string[];
+}
+
+export interface Config {
+  length: number;
+  _id: string;
+  maxWeight: string;
+  deliveryCharge: string;
+  minAmount: string;
 }
 
 export interface Cart {
@@ -38,4 +62,23 @@ export interface Category {
   _id: string;
   name: string;
   image: string;
+  priority: number;
+  products: string[];
+}
+
+export interface Order {
+  _id: string;
+  isPaid: boolean;
+  orderItems: OrderItem[];
+  address: string;
+  phone: string;
+}
+
+export interface OrderItem {
+  product: Product;
+  quantity: number;
+}
+
+export interface Admin {
+  isAdmin: boolean;
 }

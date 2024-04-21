@@ -1,41 +1,38 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
-import prismadb from "@/lib/prismadb";
 
-// export async function POST(req: Request) {
-//   try {
-//     //const { userId } = auth();
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
 
-//     const userId = "user_2bYBYCjrQzapn8M7vHj8qIQIK9v";
-//     const body = await req.json();
+    const { name, image, priority } = body;
+    const client = await clientPromise;
+    const db = client.db("Kerafresh");
+    const collection = db.collection("Categories");
+    const result = await collection.insertOne({
+      name,
+      image,
+      priority,
+      products: [],
+      createdAt: new Date(),
+    });
 
-//     const { name, imageUrl, priority } = body;
+    // Fetch the newly inserted category
+    const category = await collection.findOne({ _id: result.insertedId });
 
-//     if (!userId) {
-//       return new NextResponse("Unauthenticated", { status: 403 });
-//     }
-
-//     if (!name) {
-//       return new NextResponse("Name is required", { status: 400 });
-//     }
-
-//     if (!imageUrl) {
-//       return new NextResponse("Image is required", { status: 400 });
-//     }
-
-//     return NextResponse.json(category);
-//   } catch (error) {
-//     console.log("[CATEGORIES_POST]", error);
-//     return new NextResponse("Internal error", { status: 500 });
-//   }
-// }
+    return NextResponse.json(category);
+  } catch (error) {
+    console.log("[CATEGORIES_POST]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
 
 export async function GET(req: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("Kerafresh");
     const categories = await db.collection("Categories").find({}).toArray();
-
+    console.log("fetching categories", categories);
     return NextResponse.json(categories);
   } catch (error) {
     console.log("[CATEGORIES_GET]", error);
