@@ -3,7 +3,7 @@
 import { ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { UserButton } from "@clerk/nextjs";
+//import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import useCart from "@/hooks/use-cart";
 import { useUser } from "@clerk/nextjs";
@@ -55,7 +55,7 @@ const NavbarActions = ({ isAdmin }: { isAdmin: boolean }) => {
           {cart.items.length}
         </span>
       </Button>
-      <UserButton />
+      {/* // <UserButton /> */}
     </div>
   );
 };

@@ -5,26 +5,25 @@ import Container from "@/components/ui/container";
 import NavbarActions from "@/components/navbar-actions";
 import getCategories from "@/actions/get-categories";
 import CategorySwitcher from "./category-switcher";
-import { auth } from "@clerk/nextjs";
 import styles from "./navbar.module.css";
 import getConfig from "@/actions/get-config";
 
 const Navbar = async () => {
   const categories = await getCategories();
 
-
   const configData = await getConfig();
   //console.log(" auth()", auth());
-  const { userId } = auth();
+  // const { userId } = auth();
 
-  const list = ["user_2f4LxPVnULRzrVerGOzrBFlondZ"];
-  let isAdmin = false;
-  if (userId !== null) {
-    isAdmin = configData.users.includes(userId);
-  } else {
-    console.log("User ID is not available");
-  }
+  // const list = ["user_2f4LxPVnULRzrVerGOzrBFlondZ"];
+  // let isAdmin = false;
+  // if (userId !== null) {
+  //   isAdmin = configData.users.includes(userId);
+  // } else {
+  //   console.log("User ID is not available");
+  // }
 
+  let isAdmin = true;
   return (
     <div className="border-b">
       <Container>
