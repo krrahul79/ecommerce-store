@@ -13,7 +13,7 @@ interface CategoryPageProps {
     brandId: string;
   };
 }
-
+//Adding a comment
 const BrandPage: React.FC<CategoryPageProps> = async ({ params }) => {
   const products = await getProducts({
     brandId: params.brandId,
