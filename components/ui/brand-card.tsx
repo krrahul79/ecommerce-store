@@ -3,17 +3,17 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import { Category } from "@/types";
+import { Category, Brand } from "@/types";
 
-interface CategoryCard {
-  data: Category;
+interface BrandCard {
+  data: Brand;
 }
 
-const CategoryCard: React.FC<CategoryCard> = ({ data }) => {
+const BrandCard: React.FC<BrandCard> = ({ data }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/category/${data?._id}`);
+    router.push(`/brand/${data?._id}`);
   };
 
   return (
@@ -35,4 +35,4 @@ const CategoryCard: React.FC<CategoryCard> = ({ data }) => {
   );
 };
 
-export default CategoryCard;
+export default BrandCard;

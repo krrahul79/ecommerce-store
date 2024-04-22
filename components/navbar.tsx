@@ -7,17 +7,20 @@ import getCategories from "@/actions/get-categories";
 import CategorySwitcher from "./category-switcher";
 import { auth } from "@clerk/nextjs";
 import styles from "./navbar.module.css";
+import getConfig from "@/actions/get-config";
 
 const Navbar = async () => {
   const categories = await getCategories();
 
+
+  const configData = await getConfig();
   //console.log(" auth()", auth());
   const { userId } = auth();
 
   const list = ["user_2f4LxPVnULRzrVerGOzrBFlondZ"];
   let isAdmin = false;
   if (userId !== null) {
-    isAdmin = list.includes(userId);
+    isAdmin = configData.users.includes(userId);
   } else {
     console.log("User ID is not available");
   }
@@ -25,7 +28,7 @@ const Navbar = async () => {
   return (
     <div className="border-b">
       <Container>
-        <div className="relative px-2 sm:px-6 lg:px-8 flex h-20 items-center">
+        <div className="relative px-2 sm:px-6 lg:px-8 flex h-18 items-center">
           <Link href="/" className="mr-4 lg:mr-0 flex-shrink-0">
             <Image
               src="https://res.cloudinary.com/dur9jryl7/image/upload/v1713725249/bbwmvtwcipvnqjay965a.png"
@@ -36,7 +39,7 @@ const Navbar = async () => {
               className="zoom-image group"
             />
           </Link>
-          <div className="flex-grow flex justify-center">
+          <div className="ml-10">
             <CategorySwitcher items={categories} />
           </div>
           <NavbarActions isAdmin={isAdmin} />

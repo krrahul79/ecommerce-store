@@ -1,4 +1,4 @@
-import { Urbanist } from "next/font/google";
+import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import ModalProvider from "@/providers/modal-provider";
 import ToastProvider from "@/providers/toast-provider";
@@ -7,7 +7,7 @@ import Footer from "@/components/footer";
 
 import "./globals.css";
 
-const font = Urbanist({ subsets: ["latin"] });
+const font = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Store",

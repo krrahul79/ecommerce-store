@@ -31,11 +31,11 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
     previewModal.onOpen(data);
   };
 
-  const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
-    event.stopPropagation();
+  // const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
+  //   event.stopPropagation();
 
-    cart.addItem(data);
-  };
+  //   cart.addItem(data);
+  // };
 
   return (
     <div
@@ -50,7 +50,7 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
           fill
           className="aspect-square object-cover rounded-md"
         />
-        <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
+        {/* <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
             <IconButton
               onClick={onPreview}
@@ -61,7 +61,7 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
               icon={<ShoppingCart size={20} className="text-gray-600" />}
             />
           </div>
-        </div>
+        </div> */}
       </div>
       {/* Description */}
       <div>

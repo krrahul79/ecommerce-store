@@ -41,6 +41,7 @@ export interface Config {
   maxWeight: string;
   deliveryCharge: string;
   minAmount: string;
+  users: string[];
 }
 
 export interface Cart {
@@ -59,6 +60,14 @@ export interface Billboard {
 }
 
 export interface Category {
+  _id: string;
+  name: string;
+  image: string;
+  priority: number;
+  products: string[];
+}
+
+export interface Brand {
   _id: string;
   name: string;
   image: string;

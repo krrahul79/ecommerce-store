@@ -58,7 +58,7 @@ export default function CategorySwitcher({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[250px] h-10 flex items-center justify-center"
+          className="w-[250px] h-[50px] flex items-center justify-center rounded-lg bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           {currentCategory ? currentCategory?.label : "Search Category..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />

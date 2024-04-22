@@ -10,9 +10,9 @@ interface GalleryTabProps {
 
 const GalleryTab: React.FC<GalleryTabProps> = ({ image }) => {
   return (
-    <Tab className="relative flex aspect-square cursor-pointer items-center justify-center rounded-md bg-white">
+    <Tab className="relative flex aspect-square cursor-pointer items-center justify-center rounded-md bg-white mb-2">
       {({ selected }) => (
-        <div>
+        <div className="">
           <span className="absolute h-full w-full aspect-square inset-0 overflow-hidden rounded-md">
             <NextImage
               fill
