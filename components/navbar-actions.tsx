@@ -22,8 +22,8 @@ const NavbarActions = ({ isAdmin }: { isAdmin: boolean }) => {
     return null;
   }
 
-  const { user } = useUser();
-  console.log("user", user);
+  //const { user } = useUser();
+  // console.log("user", user);
   // if (!isAdmin) {
   //   return null;
   // }

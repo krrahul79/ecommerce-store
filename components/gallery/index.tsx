@@ -17,13 +17,13 @@ const Gallery: React.FC<GalleryProps> = ({ images = [] }) => {
       <div className="mx-auto mt-6 hidden w-40 max-w-xl sm:block lg:max-w-none mr-20">
         <Tab.List className="flex flex-col">
           {images.map((image) => (
-            <GalleryTab image={image} />
+            <GalleryTab key={image} image={image} />
           ))}
         </Tab.List>
       </div>
       <Tab.Panels className="aspect-square w-full">
-        {images.map((image) => (
-          <Tab.Panel>
+        {images.map((image, index) => (
+          <Tab.Panel key={index}>
             <div className="aspect-square relative h-full w-full sm:rounded-lg overflow-hidden">
               <NextImage
                 fill

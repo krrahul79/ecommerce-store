@@ -383,7 +383,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           <div>
             {childProducts.length > 0 &&
               childProducts.map((childProduct, index) => (
-                <div className="md:grid md:grid-cols-4 gap-8">
+                <div className="md:grid md:grid-cols-4 gap-8" key={index}>
                   <FormField
                     control={form.control}
                     name={`childProducts.${index}.newprice`}
