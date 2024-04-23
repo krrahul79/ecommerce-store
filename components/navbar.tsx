@@ -13,6 +13,8 @@ const Navbar = async () => {
   const categories = await getCategories();
 
   const configData = await getConfig();
+
+  //console.log(configData.users);
   //console.log(" auth()", auth());
   const { userId } = auth();
 
