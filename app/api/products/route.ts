@@ -78,7 +78,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const categoryId = searchParams.get("categoryId") || undefined;
     const brandId = searchParams.get("brandId") || undefined;
-    const isFeatured = searchParams.get("isFeatured");
+    const isFeatured = searchParams.get("isFeatured") || undefined;
     console.log(categoryId);
     let products: string | any[] = [];
     const client = await clientPromise;
@@ -135,6 +135,12 @@ export async function GET(req: Request) {
       } else {
         console.log("Brand not found for the provided _id.");
       }
+    } else if (isFeatured) {
+      products = await db
+        .collection("Products")
+        .find({ isFeatured: true })
+        .sort({ created: 1 })
+        .toArray();
     } else {
       products = await db
         .collection("Products")

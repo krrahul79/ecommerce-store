@@ -13,7 +13,7 @@ export const revalidate = 0;
 const HomePage = async () => {
   const products = await getProducts({ isFeatured: true });
   const categories = await getCategories();
-  const brands = await getBrands();
+  const brands = await getBrands({ isFeatured: true });
 
   return (
     <Container>
@@ -27,7 +27,7 @@ const HomePage = async () => {
           <ProductList title="Popular Products" items={products} />
         </div>
         <div className="flex flex-col gap-y-8 px-4 sm:px-6 lg:px-8">
-          <BrandList title="Popular Categories" items={brands} />
+          <BrandList title="Popular Brands" items={brands} />
         </div>
       </div>
     </Container>

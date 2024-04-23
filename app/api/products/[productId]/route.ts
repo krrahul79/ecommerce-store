@@ -125,38 +125,39 @@ export async function PATCH(
     } = body;
 
     let childProductsArray: string[] = [];
-
-    await Promise.all(
-      childProducts.map(async (product: ChildProduct) => {
-        if (product && product._id && product._id != "") {
-          childProductsArray.push(product._id);
-          const result = await db.collection("Products").updateOne(
-            { _id: new ObjectId(product._id) },
-            {
-              $set: {
-                oldprice: parseFloat(String(product.oldprice)),
-                newprice: parseFloat(String(product.newprice)),
-                showSize: product.showSize,
-                calculateSize: parseInt(String(product.calculateSize)),
-                isChildProduct: true,
-                createdAt: new Date(),
-              },
-            }
-          );
-        } else {
-          const collection = db.collection("Products");
-          const result = await collection.insertOne({
-            oldprice: parseFloat(String(product.oldprice)),
-            newprice: parseFloat(String(product.newprice)),
-            showSize: product.showSize,
-            calculateSize: parseInt(String(product.calculateSize)),
-            isChildProduct: product.isChildProduct,
-            createdAt: new Date(),
-          });
-          childProductsArray.push(result.insertedId.toString());
-        }
-      })
-    );
+    if (childProducts) {
+      await Promise.all(
+        childProducts.map(async (product: ChildProduct) => {
+          if (product && product._id && product._id != "") {
+            childProductsArray.push(product._id);
+            const result = await db.collection("Products").updateOne(
+              { _id: new ObjectId(product._id) },
+              {
+                $set: {
+                  oldprice: parseFloat(String(product.oldprice)),
+                  newprice: parseFloat(String(product.newprice)),
+                  showSize: product.showSize,
+                  calculateSize: parseInt(String(product.calculateSize)),
+                  isChildProduct: true,
+                  createdAt: new Date(),
+                },
+              }
+            );
+          } else {
+            const collection = db.collection("Products");
+            const result = await collection.insertOne({
+              oldprice: parseFloat(String(product.oldprice)),
+              newprice: parseFloat(String(product.newprice)),
+              showSize: product.showSize,
+              calculateSize: parseInt(String(product.calculateSize)),
+              isChildProduct: product.isChildProduct,
+              createdAt: new Date(),
+            });
+            childProductsArray.push(result.insertedId.toString());
+          }
+        })
+      );
+    }
 
     const result = await db.collection("Products").updateOne(
       { _id: new ObjectId(params.productId) },

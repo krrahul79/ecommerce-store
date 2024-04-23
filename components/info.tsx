@@ -3,7 +3,7 @@
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import Currency from "@/components/ui/currency";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Product, CartProduct } from "@/types";
 import useCart from "@/hooks/use-cart";
 import { calculatePercentageDifference } from "@/lib/utils";
@@ -54,27 +54,29 @@ const Info: React.FC<InfoProps> = ({ data }) => {
     <div>
       <h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
       <div className="mt-3 flex items-end">
-        {data?.oldprice && (
+        {data?.oldprice && parseFloat(data?.oldprice) > 0 ? (
           <p className="text-xl text-red-500 line-through mr-4">
             <Currency value={oldprice || data.oldprice} />
           </p>
-        )}
+        ) : null}
         <p className="text-2xl text-gray-900 mr-4">
           <Currency value={newprice || data.newprice} />
         </p>
 
-        {data?.oldprice && data?.newprice && (
+        {data?.oldprice && data?.newprice && parseFloat(data?.oldprice) > 0 ? (
           <p className="text-sm text-gray-500">
             {` Save (${calculatePercentageDifference(
               oldprice || data.oldprice,
               newprice || data.newprice
             ).toFixed(2)}%)`}
           </p>
-        )}
+        ) : null}
       </div>
-      <div>
-        <p className="text-xl mt-5 text-gray-500">{`${data.typeToDisplay}`}</p>
-      </div>
+      {data.childProducts.length > 0 ? (
+        <div>
+          <p className="text-xl mt-5 text-gray-500">{`${data.typeToDisplay}`}</p>
+        </div>
+      ) : null}
       {/* Display buttons for child products */}
       {data.childProducts && data.childProducts.length > 0 && (
         <div className="mt-5">

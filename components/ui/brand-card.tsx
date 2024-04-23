@@ -19,17 +19,18 @@ const BrandCard: React.FC<BrandCard> = ({ data }) => {
   return (
     <div onClick={handleClick} className="group cursor-pointer space-y-4">
       {/* Image & actions */}
-      <div className="aspect-square rounded-xl bg-gray-100 relative">
+      <div className="flex align-center rounded-full overflow-hidden bg-gray-100 relative w-40 h-40">
         <Image
           src={data.image}
           alt=""
-          fill
-          className="aspect-square object-cover rounded-md"
+          width={100}
+          height={100}
+          className="object-cover flex align-center w-full h-full"
         />
       </div>
       {/* Description */}
-      <div>
-        <p className="font-semibold text-md text-center">{data.name}</p>
+      <div className="text-center">
+        <p className="font-semibold text-md">{data.name}</p>
       </div>
     </div>
   );

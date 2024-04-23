@@ -69,23 +69,23 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
       </div>
       {/* Price & Reiew */}
       <div className="mt-3 flex items-end">
-        {data?.oldprice && (
+        {data?.oldprice && parseFloat(data.oldprice) > 0 ? (
           <p className="text-xl text-red-500 line-through mr-2">
             <Currency value={data.oldprice} />
           </p>
-        )}
+        ) : null}
         <p className="text-2xl text-gray-900 mr-2">
           <Currency value={data?.newprice} />
         </p>
 
-        {data?.oldprice && data?.newprice && (
+        {data?.oldprice && data?.newprice && parseFloat(data.oldprice) > 0 ? (
           <p className="text-sm text-gray-500">
             {` Save (${calculatePercentageDifference(
               data.oldprice,
               data.newprice
             ).toFixed(2)}%)`}
           </p>
-        )}
+        ) : null}
       </div>
     </div>
   );

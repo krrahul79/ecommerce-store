@@ -29,8 +29,20 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+
+    const isFeatured = searchParams.get("isFeatured") || undefined;
+
     const client = await clientPromise;
     const db = client.db("Kerafresh");
+    if (isFeatured) {
+      const brands = await db
+        .collection("Brands")
+        .find({ isFeatured: true })
+        .toArray();
+      console.log("fetching Brands", brands);
+      return NextResponse.json(brands);
+    }
     const brands = await db.collection("Brands").find({}).toArray();
     console.log("fetching Brands", brands);
     return NextResponse.json(brands);

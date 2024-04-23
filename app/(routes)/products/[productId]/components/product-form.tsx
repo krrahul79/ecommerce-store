@@ -42,7 +42,7 @@ const formSchema = z.object({
   _id: z.string().min(1),
   name: z.string().min(1),
   images: z.string().array(),
-  oldprice: z.coerce.number().min(1),
+  oldprice: z.coerce.number().min(0),
   newprice: z.coerce.number().min(1),
   calculateSize: z.coerce.number().min(1),
   categoryId: z.string().min(1),
@@ -381,7 +381,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             />
           </div>
           <div>
-            {childProducts.length > 0 &&
+            {childProducts &&
+              childProducts.length > 0 &&
               childProducts.map((childProduct, index) => (
                 <div className="md:grid md:grid-cols-4 gap-8" key={index}>
                   <FormField
