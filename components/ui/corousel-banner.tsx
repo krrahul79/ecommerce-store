@@ -28,7 +28,7 @@ const CarouselBanner = () => {
             <div className="aspect-w-4 aspect-h-3">
               {/* Aspect ratio 3:2 (or any other aspect ratio of your image) */}
               <Image
-                src="https://res.cloudinary.com/dur9jryl7/image/upload/v1713743559/pjog8ofguntckmhqemgg.jpg"
+                src="https://res.cloudinary.com/dur9jryl7/image/upload/v1713830752/ln6utlqbifkvv2xuaubh.png"
                 alt=""
                 height={800}
                 width={1800}
