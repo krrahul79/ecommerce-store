@@ -72,7 +72,7 @@ const Info: React.FC<InfoProps> = ({ data }) => {
           </p>
         ) : null}
       </div>
-      {data.childProducts.length > 0 ? (
+      {data?.childProducts && data.childProducts.length > 0 ? (
         <div>
           <p className="text-xl mt-5 text-gray-500">{`${data.typeToDisplay}`}</p>
         </div>
