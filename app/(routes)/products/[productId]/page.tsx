@@ -3,9 +3,19 @@ import { ProductForm } from "./components/product-form";
 import getProduct from "@/actions/get-product";
 
 import getCategories from "@/actions/get-categories";
+import { Product } from "@/types";
 
 const ProductPage = async ({ params }: { params: { productId: string } }) => {
-  const product = await getProduct(params.productId);
+  console.log("params", params);
+  // const product = await getProduct(params.productId);
+
+  let product: Product | null = null;
+  //console.log("params", params.categoryId);
+  if (params.productId !== undefined && params.productId !== "new") {
+    product = await getProduct(params.productId);
+  } else {
+    product = null;
+  }
 
   console.log("product in productpage", product);
 

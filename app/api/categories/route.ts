@@ -31,7 +31,7 @@ export async function GET(req: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("Kerafresh");
-    const categories = await db.collection("Categories").find({}).toArray();
+    const categories = await db.collection("Categories").find({}) .sort({ priority: 1 }).toArray();
     console.log("fetching categories", categories);
     return NextResponse.json(categories);
   } catch (error) {

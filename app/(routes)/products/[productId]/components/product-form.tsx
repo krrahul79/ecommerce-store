@@ -45,6 +45,7 @@ const formSchema = z.object({
   oldprice: z.coerce.number().min(0),
   newprice: z.coerce.number().min(1),
   calculateSize: z.coerce.number().min(1),
+  priority: z.coerce.number().min(1),
   categoryId: z.string().min(1),
   typeToDisplay: z.string().min(1),
   isFeatured: z.boolean().default(false),
@@ -103,6 +104,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         oldprice: 0,
         newprice: 0,
         calculateSize: 0,
+        priority: 999,
         typeToDisplay: "WEIGHT",
         categoryId: "",
         isFeatured: false,
@@ -333,6 +335,23 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Priority</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="priority"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

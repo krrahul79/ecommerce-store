@@ -17,7 +17,7 @@ export async function GET(
     const client = await clientPromise;
 
     const db = client.db("Kerafresh");
-    if (params.productId) {
+    if (params.productId && params.productId !== "new") {
       const product = await db
         .collection("Products")
         .findOne({ _id: new ObjectId(params.productId) });
@@ -121,6 +121,7 @@ export async function PATCH(
       newprice,
       oldprice,
       typeToDisplay,
+      priority,
       _id,
     } = body;
 
@@ -170,6 +171,7 @@ export async function PATCH(
           isArchived,
           isFeatured,
           name,
+          priority: parseInt(String(priority)),
           newprice: parseFloat(String(newprice)),
           oldprice: parseFloat(String(oldprice)),
           typeToDisplay,

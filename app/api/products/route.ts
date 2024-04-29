@@ -139,13 +139,13 @@ export async function GET(req: Request) {
       products = await db
         .collection("Products")
         .find({ isFeatured: true })
-        .sort({ created: 1 })
+        .sort({ priority: 1 })
         .toArray();
     } else {
       products = await db
         .collection("Products")
         .find({ isChildProduct: false })
-        .sort({ created: 1 })
+        .sort({ priority: 1 })
         .toArray();
     }
 
