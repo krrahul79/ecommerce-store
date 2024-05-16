@@ -19,7 +19,7 @@ export async function POST(req: Request, {}: {}) {
 
     const {
       calculateSize,
-      categoryId,
+      categoryIds,
       childProducts,
       images,
       isArchived,
@@ -50,7 +50,7 @@ export async function POST(req: Request, {}: {}) {
     const collection = await db.collection("Products");
     const result = await collection.insertOne({
       calculateSize: parseInt(String(calculateSize)),
-      categoryId,
+      categoryIds,
       childProducts: childProductsArray,
       images,
       isArchived,
@@ -62,6 +62,24 @@ export async function POST(req: Request, {}: {}) {
       createdAt: new Date(),
     });
 
+    if (result.acknowledged || result.insertedId) {
+      await Promise.all(
+        categoryIds.map(async (categoryId: string) => {
+          const categoryCollection = db.collection("Categories");
+          const category = await categoryCollection.findOne({
+            _id: new ObjectId(categoryId),
+          });
+          if (category) {
+            if (!category.products.includes(result.insertedId)) {
+              await categoryCollection.updateOne(
+                { _id: new ObjectId(categoryId) },
+                { $push: { products: result.insertedId } as any }
+              );
+            }
+          }
+        })
+      );
+    }
     const updatedProduct = await db
       .collection("Products")
       .findOne({ _id: new ObjectId(result.insertedId) });

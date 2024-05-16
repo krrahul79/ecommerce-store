@@ -7,7 +7,7 @@ export interface Product {
   newprice: string;
   calculateSize: string;
   isChildProduct: boolean;
-  categoryId: string;
+  categoryIds: string[];
   isFeatured: boolean;
   isArchived: boolean;
   priority: number;
@@ -65,6 +65,11 @@ export interface Category {
   image: string;
   priority: number;
   products: string[];
+}
+
+export interface CategoryArray {
+  value: string;
+  label: string;
 }
 
 export interface Brand {

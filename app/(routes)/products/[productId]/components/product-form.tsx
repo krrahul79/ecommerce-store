@@ -11,9 +11,9 @@ import React from "react";
 //import { Category, Image, Product } from "@lib/uti";
 import { Plus, Minus } from "lucide-react";
 
-import { Category, ChildProduct, Product } from "@/types";
+import { Category, CategoryArray, ChildProduct, Product } from "@/types";
 import { useParams, useRouter } from "next/navigation";
-
+import Select from "react-select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,13 +28,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Heading } from "@/components/ui/heading";
 import { AlertModal } from "@/components/modals/alert-modal";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import makeAnimated from "react-select/animated";
 import ImageUpload from "@/components/ui/image-upload";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -46,7 +40,7 @@ const formSchema = z.object({
   newprice: z.coerce.number().min(1),
   calculateSize: z.coerce.number().min(1),
   priority: z.coerce.number().min(1),
-  categoryId: z.string().min(1),
+  categoryIds: z.string().array(),
   typeToDisplay: z.string().min(1),
   isFeatured: z.boolean().default(false),
   isArchived: z.boolean().default(false),
@@ -68,10 +62,11 @@ interface ProductFormProps {
   initialData:
     | (Product & {
         images: string[];
+        categoryIds: string[];
         childProducts: ChildProduct[];
       })
     | null;
-  categories: Category[];
+  categories: CategoryArray[];
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
@@ -106,7 +101,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         calculateSize: 0,
         priority: 999,
         typeToDisplay: "WEIGHT",
-        categoryId: "",
+        categoryIds: [],
         isFeatured: false,
         isArchived: false,
       };
@@ -125,6 +120,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       })),
     },
   });
+
+  const animatedComponents = makeAnimated();
 
   const onSubmit = async (data: ProductFormValues) => {
     console.log("Inside onsubmit", data);
@@ -309,11 +306,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="categoryId"
+              name="categoryIds"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select
+                  {/* <Select
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
@@ -334,7 +331,27 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Select> */}
+
+                  <Select
+                    closeMenuOnSelect={false}
+                    components={animatedComponents}
+                    defaultValue={field.value.map((categoryId) =>
+                      categories.find(
+                        (category) => category.value === categoryId
+                      )
+                    )}
+                    isMulti
+                    options={categories}
+                    onChange={(selectedOptions) => {
+                      // Update field.value with the selected category IDs
+                      field.onChange(
+                        selectedOptions
+                          .map((option) => option?.value)
+                          .filter(Boolean) as string[]
+                      );
+                    }}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

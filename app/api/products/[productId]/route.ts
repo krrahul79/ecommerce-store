@@ -112,7 +112,7 @@ export async function PATCH(
 
     const {
       calculateSize,
-      categoryId,
+      categoryIds,
       childProducts,
       images,
       isArchived,
@@ -165,7 +165,7 @@ export async function PATCH(
       {
         $set: {
           calculateSize: parseInt(String(calculateSize)),
-          categoryId,
+          categoryIds,
           childProducts: childProductsArray,
           images,
           isArchived,
@@ -180,6 +180,54 @@ export async function PATCH(
       }
     );
 
+    if (result.modifiedCount || result.upsertedId) {
+      console.log("result.upsertedId", result.upsertedId);
+      await Promise.all(
+        categoryIds.map(async (categoryId: string) => {
+          const categoryCollection = db.collection("Categories");
+          const category = await categoryCollection.findOne({
+            _id: new ObjectId(categoryId),
+          });
+          if (category) {
+            if (!category.products.includes(params.productId)) {
+              await categoryCollection.updateOne(
+                { _id: new ObjectId(categoryId) },
+                { $push: { products: new ObjectId(params.productId) } as any }
+              );
+            }
+          }
+        })
+      );
+    }
+
+    const allCategories = await db.collection("Categories").find({}).toArray();
+
+    const categoriesToRemoveFrom = allCategories.filter(
+      (category) =>
+        !categoryIds.includes(category._id) &&
+        category.products.includes(params.productId)
+    );
+
+    console.log("categoriesToRemoveFrom", categoriesToRemoveFrom);
+
+    // Remove product from identified categories
+    await Promise.all(
+      categoriesToRemoveFrom.map(async (category) => {
+        const categoryCollection = db.collection("Categories");
+        try {
+          await categoryCollection.updateOne(
+            { _id: new ObjectId(category._id) },
+            { $pull: { products: new ObjectId(params.productId) } as any }
+          );
+          console.log(`Product removed from category ${category._id}`);
+        } catch (error) {
+          console.error(
+            `Error removing product from category ${category._id}:`,
+            error
+          );
+        }
+      })
+    );
     const updatedProduct = await db
       .collection("Products")
       .findOne({ _id: new ObjectId(params.productId) });
