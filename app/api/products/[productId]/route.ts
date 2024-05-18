@@ -202,10 +202,28 @@ export async function PATCH(
 
     const allCategories = await db.collection("Categories").find({}).toArray();
 
+    // const onlyOne = allCategories.filter(
+    //   (category) => category.name == "Asian Grocery"
+    // );
+
+    // const condition1 = categoryIds.includes(onlyOne[0]?._id.toString());
+
+    // console.log("products", onlyOne[0].products);
+    // //const condition2 = onlyOne[0].products.includes(params.productId);
+
+    // const condition2 = onlyOne[0].products.some(
+    //   (productId: { equals: (arg0: any) => any }) =>
+    //     productId.equals(new ObjectId(params.productId))
+    // );
+
+    // console.log("allCategories", allCategories);
+
     const categoriesToRemoveFrom = allCategories.filter(
       (category) =>
-        !categoryIds.includes(category._id) &&
-        category.products.includes(params.productId)
+        !categoryIds.includes(category._id.toString()) &&
+        category.products.some((productId: { equals: (arg0: any) => any }) =>
+          productId.equals(new ObjectId(params.productId))
+        )
     );
 
     console.log("categoriesToRemoveFrom", categoriesToRemoveFrom);
@@ -214,18 +232,10 @@ export async function PATCH(
     await Promise.all(
       categoriesToRemoveFrom.map(async (category) => {
         const categoryCollection = db.collection("Categories");
-        try {
-          await categoryCollection.updateOne(
-            { _id: new ObjectId(category._id) },
-            { $pull: { products: new ObjectId(params.productId) } as any }
-          );
-          console.log(`Product removed from category ${category._id}`);
-        } catch (error) {
-          console.error(
-            `Error removing product from category ${category._id}:`,
-            error
-          );
-        }
+        await categoryCollection.updateOne(
+          { _id: new ObjectId(category._id) },
+          { $pull: { products: new ObjectId(params.productId) } as any }
+        );
       })
     );
     const updatedProduct = await db

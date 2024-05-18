@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Product, CartProduct } from "@/types";
 import useCart from "@/hooks/use-cart";
 import { calculatePercentageDifference } from "@/lib/utils";
+import { toast } from "react-hot-toast";
 
 interface InfoProps {
   data: Product;
@@ -16,7 +17,7 @@ const Info: React.FC<InfoProps> = ({ data }) => {
   console.log("data.childProducts", data.childProducts);
   const cart = useCart();
   const [productId, setProductId] = useState(data._id);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [newprice, setNewPrice] = useState<string | null>(null);
   const [oldprice, setOldPrice] = useState<string | null>(null);
   const onAddToCart = () => {
@@ -27,7 +28,11 @@ const Info: React.FC<InfoProps> = ({ data }) => {
       calculatesize: data.calculateSize,
       images: data.images,
     };
-    cart.addItem({ cartProduct, quantity });
+    if (quantity > 0) {
+      cart.addItem({ cartProduct, quantity });
+    } else {
+      toast("Please increase the quantity");
+    }
   };
 
   const decreaseQuantity = () => {
