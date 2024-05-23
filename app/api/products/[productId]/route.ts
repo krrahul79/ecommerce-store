@@ -126,7 +126,7 @@ export async function PATCH(
     } = body;
 
     let childProductsArray: string[] = [];
-    if (childProducts) {
+    if (childProducts && childProducts.length > 0) {
       await Promise.all(
         childProducts.map(async (product: ChildProduct) => {
           if (product && product._id && product._id != "") {
@@ -179,26 +179,23 @@ export async function PATCH(
         },
       }
     );
-
-    if (result.modifiedCount || result.upsertedId) {
-      console.log("result.upsertedId", result.upsertedId);
-      await Promise.all(
-        categoryIds.map(async (categoryId: string) => {
-          const categoryCollection = db.collection("Categories");
-          const category = await categoryCollection.findOne({
-            _id: new ObjectId(categoryId),
-          });
-          if (category) {
-            if (!category.products.includes(params.productId)) {
-              await categoryCollection.updateOne(
-                { _id: new ObjectId(categoryId) },
-                { $push: { products: new ObjectId(params.productId) } as any }
-              );
-            }
+    //   console.log("result.upsertedId", result.upsertedId);
+    await Promise.all(
+      categoryIds.map(async (categoryId: string) => {
+        const categoryCollection = db.collection("Categories");
+        const category = await categoryCollection.findOne({
+          _id: new ObjectId(categoryId),
+        });
+        if (category) {
+          if (!category.products.includes(params.productId)) {
+            await categoryCollection.updateOne(
+              { _id: new ObjectId(categoryId) },
+              { $push: { products: new ObjectId(params.productId) } as any }
+            );
           }
-        })
-      );
-    }
+        }
+      })
+    );
 
     const allCategories = await db.collection("Categories").find({}).toArray();
 
@@ -221,8 +218,11 @@ export async function PATCH(
     const categoriesToRemoveFrom = allCategories.filter(
       (category) =>
         !categoryIds.includes(category._id.toString()) &&
-        category.products.some((productId: { equals: (arg0: any) => any }) =>
-          productId.equals(new ObjectId(params.productId))
+        category.products.length > 0 &&
+        category.products.some(
+          (productId: any) =>
+            productId != null &&
+            productId.equals(new ObjectId(params.productId))
         )
     );
 
