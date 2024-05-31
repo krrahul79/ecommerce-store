@@ -22,7 +22,9 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/product/${data?._id}`);
+    if (!data?.isOutOfStock) {
+      router.push(`/product/${data?._id}`);
+    }
   };
 
   const onPreview: MouseEventHandler<HTMLButtonElement> = (event) => {
@@ -48,8 +50,15 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
           src={data.images?.[0]}
           alt=""
           fill
-          className="aspect-square object-cover rounded-md"
+          className={`aspect-square object-cover rounded-md ${
+            data?.isOutOfStock ? "blur-sm" : ""
+          }`}
         />
+        {data?.isOutOfStock && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
+            <p className="text-white text-xl font-semibold">Out of Stock</p>
+          </div>
+        )}
         {/* <div className="opacity-0 group-hover:opacity-100 transition absolute w-full px-6 bottom-5">
           <div className="flex gap-x-6 justify-center">
             <IconButton

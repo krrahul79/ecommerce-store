@@ -21,17 +21,21 @@ const Info: React.FC<InfoProps> = ({ data }) => {
   const [newprice, setNewPrice] = useState<string | null>(null);
   const [oldprice, setOldPrice] = useState<string | null>(null);
   const onAddToCart = () => {
-    const cartProduct: CartProduct = {
-      _id: productId,
-      name: data.name,
-      newprice: newprice || data.newprice,
-      calculatesize: data.calculateSize,
-      images: data.images,
-    };
-    if (quantity > 0) {
-      cart.addItem({ cartProduct, quantity });
+    if (data?.isOutOfStock) {
+      toast.error("Product out of stock");
     } else {
-      toast("Please increase the quantity");
+      const cartProduct: CartProduct = {
+        _id: productId,
+        name: data.name,
+        newprice: newprice || data.newprice,
+        calculatesize: data.calculateSize,
+        images: data.images,
+      };
+      if (quantity > 0) {
+        cart.addItem({ cartProduct, quantity });
+      } else {
+        toast("Please increase the quantity");
+      }
     }
   };
 

@@ -44,6 +44,7 @@ const formSchema = z.object({
   typeToDisplay: z.string().min(1),
   isFeatured: z.boolean().default(false),
   isArchived: z.boolean().default(false),
+  isOutOfStock: z.boolean().default(false),
 });
 
 //type ProductFormValues = z.infer<typeof formSchema>;
@@ -104,6 +105,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         categoryIds: [],
         isFeatured: false,
         isArchived: false,
+        isOutOfStock: false,
       };
 
   const form = useForm<ProductFormValues>({
@@ -410,6 +412,27 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     <FormLabel>Archived</FormLabel>
                     <FormDescription>
                       This product will not appear anywhere in the store.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isOutOfStock"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      // @ts-ignore
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Out of stock</FormLabel>
+                    <FormDescription>
+                      This product will be shown as out of stock.
                     </FormDescription>
                   </div>
                 </FormItem>

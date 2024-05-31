@@ -32,9 +32,19 @@ const CartPage = () => {
       }
     };
 
-    fetchConfig();
+    const updateDeliveryCharge = () => {
+      const totalPrice = cart.items.reduce((total, item) => {
+        return total + Number(item.cartProduct.newprice) * item.quantity;
+      }, 0);
+      console.log("totalPrice", totalPrice);
+      if (totalPrice > minAmount) {
+        setDeliveryCharge(0.0);
+      }
+    };
+
+    fetchConfig().then(updateDeliveryCharge);
     setIsMounted(true);
-  }, []);
+  }, [cart.items, minAmount]);
 
   if (!isMounted) {
     return null;

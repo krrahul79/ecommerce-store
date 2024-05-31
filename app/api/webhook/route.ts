@@ -74,32 +74,55 @@ export async function POST(req: Request) {
     // });
 
     let orderedProductsHTML = "";
+    const deliveryCharge = orders?.deliveryCharge;
+    const totalAmount = orders?.totalAmount;
     orders?.orderItems.forEach((item) => {
       const productName = item.product.name;
+      const price = item.product.newprice;
       const quantity = item.quantity;
+
       orderedProductsHTML += `
             <tr>
-                <td>${productName}</td>
-                <td>${quantity}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${productName}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${quantity}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">£${price} each</td>
             </tr>`;
     });
 
+    orderedProductsHTML += `
+    <tr>
+        <td colspan="2" style="padding: 8px; border: 1px solid #ddd; text-align: right;">Delivery Charge:</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">£${deliveryCharge}</td>
+    </tr>`;
+    orderedProductsHTML += `
+    <tr>
+        <td colspan="2" style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">Total Amount:</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">£${totalAmount}</td>
+    </tr>`;
+
     const orderDetailsHTML = `
-    <p><strong>Order ID:</strong> ${session?.metadata?.orderId}</p>
-    <p><strong>Address:</strong> ${addressString}</p>
-    <p><strong>Phone:</strong> ${session?.customer_details?.phone || ""}</p>
-    <table border="1">
-    <thead>
-        <tr>
-            <th>Product Name</th>
-            <th>Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-        ${orderedProductsHTML}
-    </tbody>
-</table>
-  `;
+      <div style="font-family: Arial, sans-serif; color: #333;">
+        <h2 style="color: #5a9;">Thank you for your order!</h2>
+        <p><strong>Order ID:</strong> ${session?.metadata?.orderId}</p>
+        <p><strong>Delivery Address:</strong> ${addressString}</p>
+        <p><strong>Contact Phone:</strong> ${
+          session?.customer_details?.phone || "N/A"
+        }</p>
+        <table style="border-collapse: collapse; width: 100%; margin-top: 20px;">
+          <thead>
+            <tr style="background-color: #f2f2f2;">
+              <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Product Name</th>
+              <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Quantity</th>
+              <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orderedProductsHTML}
+          </tbody>
+        </table>
+        <p style="margin-top: 20px;">We appreciate your business and hope you enjoy your purchase!</p>
+      </div>
+    `;
 
     sgMail.setApiKey(uri);
     const msg = {
@@ -116,7 +139,6 @@ export async function POST(req: Request) {
       .catch((error) => {
         console.error(error);
       });
-
     console.log("result", result);
   }
 

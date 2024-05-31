@@ -14,6 +14,7 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
     name: item.name,
     isFeatured: item.isFeatured,
     isArchived: item.isArchived,
+    isOutOfStock: item.isOutOfStock,
     oldprice: item.oldprice,
     newprice: item.newprice,
     calculateSize: item.calculateSize,

@@ -16,6 +16,7 @@ export interface Product {
   typeToDisplay: string;
   childProducts: ChildProduct[];
   createdAt: Date;
+  isOutOfStock: boolean;
 }
 
 export interface ChildProduct {
@@ -84,6 +85,8 @@ export interface Order {
   _id: string;
   isPaid: boolean;
   orderItems: OrderItem[];
+  deliveryCharge: string;
+  totalAmount: string;
   address: string;
   phone: string;
 }

@@ -1,9 +1,7 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
-
 import { ObjectId } from "mongodb";
-
 import { stripe } from "@/lib/stripe";
 
 const corsHeaders = {
@@ -17,7 +15,7 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
-  const { products } = await req.json();
+  const { products, deliveryCharge } = await req.json();
 
   console.log("products", products);
 
@@ -28,33 +26,19 @@ export async function POST(req: Request) {
   const client = await clientPromise;
   const db = client.db("Kerafresh");
 
-  let deliveryCharge = 5.99;
-  let minAmount = 50.0;
-  const configData = await db.collection("Config").find({}).toArray();
+  //let deliveryCharge = 5.99;
+  // let minAmount = 50.0;
+  // const configData = await db.collection("Config").find({}).toArray();
 
-  if (configData && configData.length > 0) {
-    deliveryCharge = parseFloat(String(configData[0].deliveryCharge));
-    minAmount = parseFloat(String(configData[0].minAmount));
-  }
-
-  //  console.log("products", products);
-
-  //const orderItems = productsFetched;
-
-  // Create order document only after products are fetched
-  const collection = await db.collection("Orders");
-  const document = {
-    isPaid: false,
-    orderItems: products,
-  };
-
-  // Insert the order document
-  const result = await collection.insertOne(document);
-  const orderId = result.insertedId;
+  // if (configData && configData.length > 0) {
+  //   deliveryCharge = parseFloat(String(configData[0].deliveryCharge));
+  //   minAmount = parseFloat(String(configData[0].minAmount));
+  // }
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-  var totalAmount = 0;
-  products.forEach((productItem: any) => {
+  let totalAmount = 0;
+
+  const productPromises = products.map(async (productItem: any) => {
     line_items.push({
       quantity: productItem.quantity,
       price_data: {
@@ -65,45 +49,60 @@ export async function POST(req: Request) {
         unit_amount: productItem.product.newprice * 100,
       },
     });
-    totalAmount = totalAmount + productItem.product.newprice;
+    totalAmount += productItem.product.newprice * productItem.quantity;
   });
 
-  if (totalAmount > minAmount) {
-    deliveryCharge = 0;
-  }
+  await Promise.all(productPromises);
 
-  console.log(`Inserted ${result.insertedId} document into the collection`);
-  const session = await stripe.checkout.sessions.create({
-    line_items,
-    mode: "payment",
-    billing_address_collection: "required",
-    phone_number_collection: {
-      enabled: true,
-    },
+  // Create order document only after products are processed
+  const document = {
+    isPaid: false,
+    deliveryCharge: deliveryCharge,
+    totalAmount: parseFloat(totalAmount.toFixed(2)),
+    orderItems: products,
+  };
 
-    success_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
-    cancel_url: `${process.env.FRONTEND_STORE_URL}/cart?canceled=1`,
-    shipping_options: [
-      {
-        shipping_rate_data: {
-          type: "fixed_amount",
-          display_name: "Delivery Charges",
-          fixed_amount: {
-            amount: deliveryCharge * 100,
-            currency: "GBP",
+  try {
+    const collection = await db.collection("Orders");
+    const result = await collection.insertOne(document);
+    const orderId = result.insertedId;
+
+    console.log(`Inserted ${orderId} document into the collection`);
+
+    const session = await stripe.checkout.sessions.create({
+      line_items,
+      mode: "payment",
+      billing_address_collection: "required",
+      phone_number_collection: {
+        enabled: true,
+      },
+      success_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
+      cancel_url: `${process.env.FRONTEND_STORE_URL}/cart?canceled=1`,
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            display_name: "Delivery Charges",
+            fixed_amount: {
+              amount: deliveryCharge * 100,
+              currency: "GBP",
+            },
           },
         },
+      ],
+      metadata: {
+        orderId: orderId.toString(),
       },
-    ],
-    metadata: {
-      orderId: orderId.toString(),
-    },
-  });
+    });
 
-  return NextResponse.json(
-    { url: session.url },
-    {
-      headers: corsHeaders,
-    }
-  );
+    return NextResponse.json(
+      { url: session.url },
+      {
+        headers: corsHeaders,
+      }
+    );
+  } catch (error) {
+    console.error("Error creating order:", error);
+    return new NextResponse("Failed to create order", { status: 500 });
+  }
 }
