@@ -16,6 +16,7 @@ if (!process.env.SENDGRID_API_KEY) {
 
 const uri = process.env.SENDGRID_API_KEY;
 export async function POST(req: Request) {
+  console.log("Inside the email webhook");
   const body = await req.text();
   const signature = headers().get("Stripe-Signature") as string;
 
@@ -125,14 +126,28 @@ export async function POST(req: Request) {
     `;
 
     sgMail.setApiKey(uri);
-    const msg = {
-      to: "kr.rahul79@gmail.com", // Change to your recipient
-      from: "kr.rahul79@gmail.com", // Change to your verified sender
+    const msg1 = {
+      to: "kerafresh1@gmail.com", // Change to your recipient
+      from: "kerafresh1@gmail.com", // Change to your verified sender
       subject: "Order confirmation",
       html: orderDetailsHTML,
     };
     sgMail
-      .send(msg)
+      .send(msg1)
+      .then(() => {
+        console.log("Email sent");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    const msg2 = {
+      to: session?.customer_details?.email?.toString(), // Change to your recipient
+      from: "kerafresh1@gmail.com", // Change to your verified sender
+      subject: "Order confirmation",
+      html: orderDetailsHTML,
+    };
+    sgMail
+      .send(msg2)
       .then(() => {
         console.log("Email sent");
       })
