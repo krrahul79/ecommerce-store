@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import useCart from "@/hooks/use-cart";
 import { toast } from "react-hot-toast";
 
 import getConfig from "@/actions/get-config";
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface SummaryProps {
   deliveryCharge: number;
@@ -27,6 +28,8 @@ const Summary: React.FC<SummaryProps> = ({
 
   const removeAll = useCart((state) => state.removeAll);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isRecaptchaVerified, setRecaptchaVerified] = useState(false); // Track reCAPTCHA status
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
 
   useEffect(() => {
     if (searchParams.get("success")) {
@@ -53,6 +56,20 @@ const Summary: React.FC<SummaryProps> = ({
       return deliveryCharge + total;
     }
     return total;
+  };
+
+  const handleCheckoutClick = () => {
+    if (items.length === 0 || !!errorMessage) return; // Prevent checkout if disabled
+
+    recaptchaRef.current?.execute(); // Execute the invisible reCAPTCHA
+  };
+
+  const onRecaptchaChange = (token: string | null) => {
+    if (token) {
+      setRecaptchaVerified(true); // reCAPTCHA verified successfully
+    } else {
+      setRecaptchaVerified(false); // reCAPTCHA failed
+    }
   };
 
   const onCheckout = async () => {
@@ -101,12 +118,20 @@ const Summary: React.FC<SummaryProps> = ({
       {errorMessage && (
         <div className="text-red-500 font-medium mt-2">{errorMessage}</div>
       )}
+      <div className="mt-4">
+        <ReCAPTCHA
+          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+          onChange={onRecaptchaChange}
+          ref={recaptchaRef}
+        />
+      </div>
+
       <Button
         onClick={onCheckout}
-        disabled={items.length === 0 || !!errorMessage} // disable if no items or error message exists
+        disabled={items.length === 0 || !!errorMessage || !isRecaptchaVerified} // disable if no items or error message exists
         className="w-full mt-6"
       >
-        Checkout
+        Checkout as guest
       </Button>
     </div>
   );
