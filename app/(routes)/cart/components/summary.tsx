@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import Currency from "@/components/ui/currency";
@@ -23,6 +23,7 @@ const Summary: React.FC<SummaryProps> = ({
   minAmount,
   maxWeight,
 }) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const items = useCart((state) => state.items);
 
@@ -33,8 +34,11 @@ const Summary: React.FC<SummaryProps> = ({
 
   useEffect(() => {
     if (searchParams.get("success")) {
-      toast.success("Payment completed.");
+      toast.success(
+        "Payment successful! Your order details will be sent via email. Please remember to check your spam folder just in case."
+      );
       removeAll();
+      router.push("/");
     }
 
     if (searchParams.get("canceled")) {

@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import { Order } from "@/types";
 
 import { stripe } from "@/lib/stripe";
-
 import clientPromise from "@/lib/mongodb";
 import { Document, ObjectId, WithId } from "mongodb";
 import sgMail from "@sendgrid/mail";
@@ -156,6 +155,5 @@ export async function POST(req: Request) {
       });
     console.log("result", result);
   }
-
   return new NextResponse(null, { status: 200 });
 }

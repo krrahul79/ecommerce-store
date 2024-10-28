@@ -77,7 +77,7 @@ const useCart = create(
           item.quantity++;
           // Update the state with the modified items
           set({ items: updatedItems });
-          toast.success("Item quantity reduced.");
+          toast.success("Item quantity increased.");
         } else {
           // Item with the specified id not found
           toast.error("Item not found in cart.");
