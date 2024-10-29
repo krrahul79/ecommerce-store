@@ -62,6 +62,24 @@ const Summary: React.FC<SummaryProps> = ({
     return total;
   };
 
+  const [formData, setFormData] = useState({
+    email: "",
+    phone: "",
+    name: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    postcode: "",
+  });
+  const [formErrors, setFormErrors] = useState({
+    email: "",
+    phone: "",
+    name: "",
+    addressLine1: "",
+    city: "",
+    postcode: "",
+  });
+
   const handleCheckoutClick = () => {
     if (items.length === 0 || !!errorMessage) return; // Prevent checkout if disabled
 
@@ -74,6 +92,47 @@ const Summary: React.FC<SummaryProps> = ({
     } else {
       setRecaptchaVerified(false); // reCAPTCHA failed
     }
+  };
+
+  const validateForm = () => {
+    const errors = {
+      email: "",
+      phone: "",
+      name: "",
+      addressLine1: "",
+      city: "",
+      postcode: "",
+    };
+    let isValid = true;
+
+    // Basic validation
+    if (!formData.email) {
+      errors.email = "Email is required.";
+      isValid = false;
+    }
+    if (!formData.phone) {
+      errors.phone = "Phone number is required.";
+      isValid = false;
+    }
+    if (!formData.name) {
+      errors.name = "Name is required.";
+      isValid = false;
+    }
+    if (!formData.addressLine1) {
+      errors.addressLine1 = "Address line 1 is required.";
+      isValid = false;
+    }
+    if (!formData.city) {
+      errors.city = "Town or city is required.";
+      isValid = false;
+    }
+    if (!formData.postcode) {
+      errors.postcode = "Postcode is required.";
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
   };
 
   const onCheckout = async () => {
@@ -90,6 +149,7 @@ const Summary: React.FC<SummaryProps> = ({
           quantity: item.quantity,
         })),
         deliveryCharge: deliveryCharge,
+        customerInfo: formData,
       }
     );
 
@@ -129,7 +189,102 @@ const Summary: React.FC<SummaryProps> = ({
           ref={recaptchaRef}
         />
       </div>
+      {isRecaptchaVerified && (
+        <div className="mt-4">
+          <h3 className="text-lg font-medium text-gray-900">
+            Contact Information
+          </h3>
+          <div className="space-y-2">
+            <input
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              className={`border p-2 w-full ${
+                formErrors.email && "border-red-500"
+              }`}
+            />
+            <div className="text-red-500">{formErrors.email}</div>
 
+            <input
+              type="tel"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              className={`border p-2 w-full ${
+                formErrors.phone && "border-red-500"
+              }`}
+            />
+            <div className="text-red-500">{formErrors.phone}</div>
+
+            <input
+              type="text"
+              placeholder="Name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              className={`border p-2 w-full ${
+                formErrors.name && "border-red-500"
+              }`}
+            />
+            <div className="text-red-500">{formErrors.name}</div>
+
+            <input
+              type="text"
+              placeholder="Address Line 1"
+              value={formData.addressLine1}
+              onChange={(e) =>
+                setFormData({ ...formData, addressLine1: e.target.value })
+              }
+              className={`border p-2 w-full ${
+                formErrors.addressLine1 && "border-red-500"
+              }`}
+            />
+            <div className="text-red-500">{formErrors.addressLine1}</div>
+
+            <input
+              type="text"
+              placeholder="Address Line 2 (optional)"
+              value={formData.addressLine2}
+              onChange={(e) =>
+                setFormData({ ...formData, addressLine2: e.target.value })
+              }
+              className="border p-2 w-full"
+            />
+
+            <input
+              type="text"
+              placeholder="Town or City"
+              value={formData.city}
+              onChange={(e) =>
+                setFormData({ ...formData, city: e.target.value })
+              }
+              className={`border p-2 w-full ${
+                formErrors.city && "border-red-500"
+              }`}
+            />
+            <div className="text-red-500">{formErrors.city}</div>
+
+            <input
+              type="text"
+              placeholder="Postcode"
+              value={formData.postcode}
+              onChange={(e) =>
+                setFormData({ ...formData, postcode: e.target.value })
+              }
+              className={`border p-2 w-full ${
+                formErrors.postcode && "border-red-500"
+              }`}
+            />
+            <div className="text-red-500">{formErrors.postcode}</div>
+          </div>
+        </div>
+      )}
       <Button
         onClick={onCheckout}
         disabled={items.length === 0 || !!errorMessage || !isRecaptchaVerified} // disable if no items or error message exists

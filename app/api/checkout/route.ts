@@ -15,9 +15,10 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
-  const { products, deliveryCharge } = await req.json();
+  const { products, deliveryCharge, customerInfo } = await req.json(); // Fetch formData from the request
 
   console.log("products", products);
+  console.log("formData", customerInfo); // Log formData for debugging
 
   if (!products || products.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
@@ -25,15 +26,6 @@ export async function POST(req: Request) {
 
   const client = await clientPromise;
   const db = client.db("Kerafresh");
-
-  //let deliveryCharge = 5.99;
-  // let minAmount = 50.0;
-  // const configData = await db.collection("Config").find({}).toArray();
-
-  // if (configData && configData.length > 0) {
-  //   deliveryCharge = parseFloat(String(configData[0].deliveryCharge));
-  //   minAmount = parseFloat(String(configData[0].minAmount));
-  // }
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   let totalAmount = 0;
@@ -72,10 +64,6 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: "payment",
-      billing_address_collection: "required",
-      phone_number_collection: {
-        enabled: true,
-      },
       success_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
       cancel_url: `${process.env.FRONTEND_STORE_URL}/cart?canceled=1`,
       shipping_options: [
@@ -92,7 +80,12 @@ export async function POST(req: Request) {
       ],
       metadata: {
         orderId: orderId.toString(),
+        address: JSON.stringify(customerInfo.address), // Optionally stringify address object if needed
       },
+      shipping_address_collection: {
+        allowed_countries: ["GB"], // Specify allowed countries
+      },
+      customer_email: customerInfo.email,
     });
 
     return NextResponse.json(
