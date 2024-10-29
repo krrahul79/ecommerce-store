@@ -28,7 +28,7 @@ export default function RootLayout({
           <meta property="og:title" content={metadata.title} />
           <meta property="og:description" content={metadata.description} />
           <meta property="og:image" content={metadata.image} />
-          <meta property="og:url" content={window.location.href} />{" "}
+          <meta property="og:url" content="https://kerafresh.co.uk/" />{" "}
           {/* You can modify this as needed */}
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={metadata.title} />
