@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ToastProvider from "@/providers/toast-provider";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import Head from "next/head";
 
 import "./globals.css";
 
@@ -23,6 +24,17 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <Head>
+          <meta property="og:title" content={metadata.title} />
+          <meta property="og:description" content={metadata.description} />
+          <meta property="og:image" content={metadata.image} />
+          <meta property="og:url" content={window.location.href} />{" "}
+          {/* You can modify this as needed */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={metadata.title} />
+          <meta name="twitter:description" content={metadata.description} />
+          <meta name="twitter:image" content={metadata.image} />
+        </Head>
         <body className={font.className}>
           <ToastProvider />
           <Navbar />
