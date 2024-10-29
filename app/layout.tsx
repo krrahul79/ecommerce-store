@@ -9,8 +9,10 @@ import "./globals.css";
 const font = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Store",
-  description: "Store - The place for all your purchases.",
+  title: "Kerafresh",
+  description: "Bringing quality to your doorstep",
+  Image:
+    "https://res.cloudinary.com/dur9jryl7/image/upload/v1730159866/ba4f5139-5b65-4c7a-a84c-96bc0abbce85_ijwctn.png",
 };
 
 export default function RootLayout({
