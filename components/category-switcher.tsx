@@ -4,7 +4,7 @@ import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import Button from "./ui/button";
+import { Button } from "./ui/button";
 import {
   Command,
   CommandEmpty,
@@ -36,7 +36,7 @@ export default function CategorySwitcher({
 
   const formattedItems = items.map((item) => ({
     label: item.name,
-    value: item.id,
+    value: item._id,
   }));
 
   const currentCategory = formattedItems.find(
@@ -55,10 +55,10 @@ export default function CategorySwitcher({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="Outline"
+          variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[250px] h-10 flex items-center justify-center"
+          className="w-[250px] h-[50px] flex items-center justify-center rounded-lg bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           {currentCategory ? currentCategory?.label : "Search Category..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />

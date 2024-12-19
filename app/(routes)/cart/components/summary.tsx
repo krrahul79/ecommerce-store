@@ -1,25 +1,44 @@
 "use client";
 
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
-import Button from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
 import { toast } from "react-hot-toast";
 
-const Summary = () => {
+import getConfig from "@/actions/get-config";
+import ReCAPTCHA from "react-google-recaptcha";
+
+interface SummaryProps {
+  deliveryCharge: number;
+  minAmount: number;
+  maxWeight: number;
+}
+
+const Summary: React.FC<SummaryProps> = ({
+  deliveryCharge,
+  minAmount,
+  maxWeight,
+}) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const items = useCart((state) => state.items);
-  const deliveryCharge = 5.99;
+
   const removeAll = useCart((state) => state.removeAll);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isRecaptchaVerified, setRecaptchaVerified] = useState(false); // Track reCAPTCHA status
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
 
   useEffect(() => {
     if (searchParams.get("success")) {
-      toast.success("Payment completed.");
+      toast.success(
+        "Payment successful! Your order details will be sent via email. Please remember to check your spam folder just in case."
+      );
       removeAll();
+      router.push("/");
     }
 
     if (searchParams.get("canceled")) {
@@ -28,23 +47,37 @@ const Summary = () => {
   }, [searchParams, removeAll]);
 
   const totalPrice = items.reduce((total, item) => {
-    return total + Number(item.price);
+    return total + Number(item.cartProduct.newprice) * item.quantity;
   }, 0);
 
   const totalMeasure = items.reduce((total, item) => {
-    return total + Number(item.measure);
+    return total + Number(item.cartProduct.calculatesize) * item.quantity;
   }, 0);
 
   const actaulTotalPrice = () => {
     var total = totalPrice;
-    if (total < 50) {
+    if (total < minAmount - 0) {
       return deliveryCharge + total;
     }
     return total;
   };
 
+  const handleCheckoutClick = () => {
+    if (items.length === 0 || !!errorMessage) return; // Prevent checkout if disabled
+
+    recaptchaRef.current?.execute(); // Execute the invisible reCAPTCHA
+  };
+
+  const onRecaptchaChange = (token: string | null) => {
+    if (token) {
+      setRecaptchaVerified(true); // reCAPTCHA verified successfully
+    } else {
+      setRecaptchaVerified(false); // reCAPTCHA failed
+    }
+  };
+
   const onCheckout = async () => {
-    if (totalMeasure > 20) {
+    if (totalMeasure > maxWeight) {
       setErrorMessage("Sorry, your order exceeds the weight limit.");
       return; // Prevent checkout if weight limit exceeded
     }
@@ -52,7 +85,10 @@ const Summary = () => {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
       {
-        productIds: items.map((item) => item.id),
+        products: items.map((item) => ({
+          product: item.cartProduct,
+          quantity: item.quantity,
+        })),
         deliveryCharge: deliveryCharge,
       }
     );
@@ -86,12 +122,20 @@ const Summary = () => {
       {errorMessage && (
         <div className="text-red-500 font-medium mt-2">{errorMessage}</div>
       )}
+      <div className="mt-4">
+        <ReCAPTCHA
+          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+          onChange={onRecaptchaChange}
+          ref={recaptchaRef}
+        />
+      </div>
+
       <Button
         onClick={onCheckout}
-        disabled={items.length === 0 || !!errorMessage} // disable if no items or error message exists
+        disabled={items.length === 0 || !!errorMessage || !isRecaptchaVerified} // disable if no items or error message exists
         className="w-full mt-6"
       >
-        Checkout
+        Checkout as guest
       </Button>
     </div>
   );
